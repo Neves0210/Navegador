@@ -16,10 +16,9 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true, // Impede acesso via JavaScript
-        secure: process.env.NODE_ENV === 'production', // Ativo apenas em HTTPS
-        sameSite: 'Strict', // Restringe envio cross-site
-        maxAge: 1000 * 60 * 60 // 1 hora
+        httpOnly: true,
+        secure: true,        // Necessário para SameSite=None
+        sameSite: 'None'     // Configura o atributo SameSite
     }
 }));
 
@@ -27,12 +26,17 @@ app.use(session({
 app.use(cookieParser());
 app.use(csrf({ cookie: true }));
 
+// Middleware para processar dados do corpo
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Rota de exemplo com validação CSRF
 app.post('/form', (req, res) => {
     // Processamento do formulário
     res.send('Formulário recebido com proteção CSRF');
 });
 
+// Inicia o servidor
 app.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');
 });
